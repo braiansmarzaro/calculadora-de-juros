@@ -6,30 +6,49 @@ function formatCurrency(value) {
 }
 
 function calculate() {
-    const totalValue = parseFloat(document.getElementById('valorTotal').value) || 0;
+    const cashValue = parseFloat(document.getElementById('valorTotal').value) || 0;
     const numInstallments = parseInt(document.getElementById('qtdMensalidades').value) || 0;
     const installmentValue = parseFloat(document.getElementById('valorMensalidades').value) || 0;
     const interestRate = parseFloat(document.getElementById('taxaRendimento').value) || 0;
 
     const monthlyRate = Math.pow(1 + interestRate / 100, 1 / 12);
-    let outstandingBalance = totalValue;
+    console.log(monthlyRate);
+    let outstandingBalance = cashValue;
     let amountPaid = 0;
 
     for(let i = 0; i < numInstallments; i++) {
+        // Calcula juros sobre o saldo devedor
+        outstandingBalance = outstandingBalance * (1+monthlyRate/100);
         outstandingBalance -= installmentValue;
-        outstandingBalance *= 1 + monthlyRate/100;
         amountPaid += installmentValue;
         console.log(i, amountPaid, outstandingBalance);
     }
 
     const finalDiscount = outstandingBalance;
-    const finalValue = totalValue-finalDiscount;
+    const finalValue = cashValue-finalDiscount;
 
-    document.getElementById('valorFinal').textContent = formatCurrency(finalValue);
-    document.getElementById('descontoFinal').textContent = formatCurrency(finalDiscount);
 
-    document.getElementById('descontoFinalPorcentagem').textContent = `${((finalDiscount/totalValue)*100).toFixed(2)}%`;
+    const valorEfetivo = installmentValue*numInstallments - Math.abs(outstandingBalance);
     
+    // Atualiza os resultados
+    document.getElementById('valorVista').textContent = formatCurrency(cashValue);
+    document.getElementById('valorParcelado').textContent = formatCurrency(valorEfetivo);
+    
+    const diferenca = Math.abs(cashValue - valorEfetivo);
+    document.getElementById('diferenca').textContent = formatCurrency(diferenca);
+
+    // Determina a melhor opção
+    const melhorOpcao = document.getElementById('melhorOpcao');
+    if (valorEfetivo < cashValue) {
+        melhorOpcao.textContent = "PARCELADO";
+        melhorOpcao.style.color = "#047857"; // verde
+    } else if (valorEfetivo > cashValue) {
+        melhorOpcao.textContent = "À VISTA";
+        melhorOpcao.style.color = "#047857"; // verde
+    } else {
+        melhorOpcao.textContent = "EQUIVALENTES";
+        melhorOpcao.style.color = "#4a5568"; // cinza
+    }
 }
 
 document.querySelectorAll('input').forEach(input => {
