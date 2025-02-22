@@ -24,25 +24,21 @@ function calculate() {
         console.log(i, amountPaid, outstandingBalance);
     }
 
-    const finalDiscount = outstandingBalance;
-    const finalValue = cashValue-finalDiscount;
-
-
-    const valorEfetivo = installmentValue*numInstallments - Math.abs(outstandingBalance);
+    const effectiveCost = installmentValue*numInstallments - Math.abs(outstandingBalance);
     
     // Atualiza os resultados
     document.getElementById('valorVista').textContent = formatCurrency(cashValue);
-    document.getElementById('valorParcelado').textContent = formatCurrency(valorEfetivo);
+    document.getElementById('valorParcelado').textContent = formatCurrency(effectiveCost);
     
-    const diferenca = Math.abs(cashValue - valorEfetivo);
+    const diferenca = Math.abs(cashValue - effectiveCost);
     document.getElementById('diferenca').textContent = formatCurrency(diferenca);
 
     // Determina a melhor opção
     const melhorOpcao = document.getElementById('melhorOpcao');
-    if (valorEfetivo < cashValue) {
+    if (effectiveCost < cashValue) {
         melhorOpcao.textContent = "PARCELADO";
         melhorOpcao.style.color = "#047857"; // verde
-    } else if (valorEfetivo > cashValue) {
+    } else if (effectiveCost > cashValue) {
         melhorOpcao.textContent = "À VISTA";
         melhorOpcao.style.color = "#047857"; // verde
     } else {
